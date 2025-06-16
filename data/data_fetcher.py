@@ -90,6 +90,9 @@ def fetch_market_sentiment(start_date, end_date, interval="1mo", ticker="^GSPC")
                                                           8, float('inf')],
                                                     labels=['Bearish', 'Neutral', 'Bullish'])
 
+        market_sentiment_data.columns = market_sentiment_data.columns.get_level_values(
+            0)
+
         return market_sentiment_data
     except Exception as e:
         print(f"An error occurred while fetching market sentiment data: {e}")

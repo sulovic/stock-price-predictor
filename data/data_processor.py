@@ -28,18 +28,28 @@ def process_raw_data():
         print("Economics data not found.")
         return
 
+    if not os.path.exists(os.path.join(RAW_DATA_DIR, "Market_sentiment.csv")):
+        print("Sentiment data not found.")
+        return
+
+    # Load the data from CSV files.
+
     stock_data = pd.read_csv(os.path.join(
         RAW_DATA_DIR, "Stock_data.csv"), index_col="Date")
     economics_data = pd.read_csv(os.path.join(
         RAW_DATA_DIR, "Economics_data.csv"), index_col="date")
+    sentiment_data = pd.read_csv(os.path.join(
+        RAW_DATA_DIR, "Market_sentiment.csv"), index_col="Date")
 
-    if stock_data.empty or economics_data.empty:
+    if stock_data.empty or economics_data.empty or sentiment_data.empty:
         print("No data found.")
         return
 
     economics_data.index.name = stock_data.index.name
     economics_data.index = pd.to_datetime(economics_data.index, format='%Y')
     stock_data.index = pd.to_datetime(stock_data.index, format='%Y-%m-%d')
+    sentiment_data.index = pd.to_datetime(
+        sentiment_data.index, format='%Y-%m-%d')
 
     economics_daily = economics_data.resample(
         'D').interpolate(method='linear').ffill()
@@ -54,6 +64,13 @@ def process_raw_data():
     merged_data['GOOGL'] = merged_data['GOOGL'].fillna(0)
     merged_data['CL=F'] = merged_data['CL=F'].interpolate(method='linear')
     merged_data['GC=F'] = merged_data['GC=F'].interpolate(method='linear')
+
+    # Drop rows with any remaining NaN values
+
+    # Merge sentiment data with the merged stock and economics data
+    merged_data = pd.merge(merged_data, sentiment_data,
+                           left_index=True, right_index=True, how='left')
+    merged_data = merged_data.fillna(method='ffill')
 
     merged_data = merged_data.dropna()
 
