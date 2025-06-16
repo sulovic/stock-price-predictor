@@ -38,13 +38,15 @@ def process_raw_data():
         return
 
     economics_data.index.name = stock_data.index.name
-    economics_data.index = pd.to_datetime(
-        economics_data.index, format='%Y')
-    stock_data.index = pd.to_datetime(
-        stock_data.index, format='%Y-%m-%d')
+    economics_data.index = pd.to_datetime(economics_data.index, format='%Y')
+    stock_data.index = pd.to_datetime(stock_data.index, format='%Y-%m-%d')
 
-    merged_data = pd.merge(stock_data, economics_data.resample(
-        'MS').interpolate().ffill(), left_index=True, right_index=True, how='left')
+    economics_daily = economics_data.resample(
+        'D').interpolate(method='linear').ffill()
+    stocks_daily = stock_data.resample('D').last().ffill()
+
+    merged_data = pd.merge(economics_daily, stocks_daily,
+                           left_index=True, right_index=True, how='left')
 
     # Interpolate missing values, fill with 0 for periods with no trading
 
@@ -52,6 +54,8 @@ def process_raw_data():
     merged_data['GOOGL'] = merged_data['GOOGL'].fillna(0)
     merged_data['CL=F'] = merged_data['CL=F'].interpolate(method='linear')
     merged_data['GC=F'] = merged_data['GC=F'].interpolate(method='linear')
+
+    merged_data = merged_data.dropna()
 
     if merged_data.isnull().any().any():
         print("Warning: Missing data detected after processing.")
