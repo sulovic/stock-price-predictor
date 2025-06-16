@@ -39,8 +39,9 @@ def load_data():
     y_test = pd.read_csv(os.path.join(
         PREPARED_DATA_DIR, "y_test_scaled.csv")).drop("Date", axis=1).values
 
-    # Replace 0s in y_train with NaN
+    # Replace 0s y with NaN
     y_train[y_train == 0] = np.nan
+    y_test[y_test == 0] = np.nan
 
     print("Loaded prepared data for training and testing.")
 
@@ -62,10 +63,15 @@ def create_model(train_shape, output_shape):
 
     model = keras.Sequential([
         keras.Input(shape=(train_shape,)),  # Explicit Input layer
+        keras.layers.Dense(128, activation='relu'),
+        keras.layers.BatchNormalization(),
+        keras.layers.Dropout(0.1),
         keras.layers.Dense(64, activation='relu'),
+        keras.layers.BatchNormalization(),
+        keras.layers.Dropout(0.1),
         keras.layers.Dense(32, activation='relu'),
         # Output layer with neurons equal to the number of stocks
-        keras.layers.Dense(units=output_shape,)
+        keras.layers.Dense(output_shape)
     ])
 
     model.compile(optimizer='adam', loss=masked_mse, metrics=[masked_mse])
@@ -76,6 +82,8 @@ def create_model(train_shape, output_shape):
 
 
 def train_model(model, X_train, y_train, X_test, y_test, epochs=30, batch_size=32):
+
+    print("Starting model training...")
 
     # Train the model
     model.fit(
