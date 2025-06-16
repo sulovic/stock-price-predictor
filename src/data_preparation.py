@@ -5,7 +5,7 @@ import joblib
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import MinMaxScaler
 
-# Define the directories to fetch and save data
+# Define the directories to read and save data
 PROCESSED_DATA_DIR = "./data/processed"
 PREPARED_DATA_DIR = "./data/prepared"
 
