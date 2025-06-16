@@ -47,6 +47,17 @@ def fetch_economics_data(tickers, start_date, end_date, country="USA", freq="M")
             print(f"No data found for {tickers.values()}.")
             return None
 
+        economics_data = economics_data.sort_index(ascending=True)
+
+        economics_data["Population growth (%)"] = economics_data["Population"].pct_change(
+            fill_method=None) * 100
+
+        economics_data["Export growth (%)"] = economics_data["Exports (current US$)"].pct_change(
+            fill_method=None) * 100
+
+        economics_data["Import growth (%)"] = economics_data["Imports (current US$)"].pct_change(
+            fill_method=None) * 100
+
         print(f"Successfully fetched data for {tickers.values()}.")
         return economics_data
     except Exception as e:
