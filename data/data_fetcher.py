@@ -7,11 +7,6 @@ import pandas as pd
 RAW_DATA_DIR = "./data/raw"
 
 
-def create_directory(directory):
-    if not os.path.exists(directory):
-        os.makedirs(directory)
-
-
 def fetch_data(tickers, start_date, end_date, interval="1mo"):
 
     # Fetch stock data for a given ticker from Yahoo Finance.
@@ -126,7 +121,7 @@ def save_data_to_csv(dataframe, file_name):
 def main():
 
     # Ensure raw data directory exists
-    create_directory(RAW_DATA_DIR)
+    os.makedirs(os.path.dirname(RAW_DATA_DIR), exist_ok=True)
 
     # Define tickers and date range
     stock_tickers = ["^GSPC", "^TNX", "^DJI", "GC=F",

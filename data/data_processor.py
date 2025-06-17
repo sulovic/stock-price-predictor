@@ -7,11 +7,6 @@ RAW_DATA_DIR = "./data/raw"
 PROCESSED_DATA_DIR = "./data/processed"
 
 
-def create_directory(directory):
-    if not os.path.exists(directory):
-        os.makedirs(directory)
-
-
 def process_raw_data():
 
     # Process raw data by merging stock and economics data.
@@ -96,7 +91,7 @@ def save_data_to_csv(dataframe, file_name):
 def main():
 
     # Ensure processed data directory exists
-    create_directory(PROCESSED_DATA_DIR)
+    os.makedirs(os.path.dirname(PROCESSED_DATA_DIR), exist_ok=True)
 
     processed_data = process_raw_data()
 
