@@ -41,12 +41,25 @@ def prepare_data():
     sentiment_map = {'Bearish': -1, 'Neutral': 0, 'Bullish': 1}
     df['SentimentNum'] = df['Sentiment'].map(sentiment_map)
 
-    # New column for date with Epoch time in seconds
-    df['Date'] = df.index.astype('int64') / 10**9
+   # Extract date features from the index
+    df['date'] = df.index
+    df['year'] = df['date'].dt.year
+    df['month'] = df['date'].dt.month
+    df['day'] = df['date'].dt.day
+    df['day_of_week'] = df['date'].dt.dayofweek
+
+    # Cyclical encoding of month and day of week
+    df['month_sin'] = np.sin(2 * np.pi * df['month'] / 12)
+    df['month_cos'] = np.cos(2 * np.pi * df['month'] / 12)
+    df['day_of_week_sin'] = np.sin(2 * np.pi * df['day_of_week'] / 7)
+    df['day_of_week_cos'] = np.cos(2 * np.pi * df['day_of_week'] / 7)
+
+    # Recalculate days starting from 1.1.2000
+    df['days_since_start'] = (df['date'] - pd.Timestamp('2000-01-01')).dt.days
 
     # Select features from Processed_data
 
-    X = df[["Date", "GDP growth rate (%)", "Unemployment rate (%)", "Real interest rate (%)",
+    X = df[["month_sin", "month_cos", "day_of_week_sin", "day_of_week_cos", "days_since_start", "GDP growth rate (%)", "Unemployment rate (%)", "Real interest rate (%)",
             "Inflation rate (%)", "Population growth (%)", "Export growth (%)", "Import growth (%)", "SentimentNum"]]
 
     # Select target variables from Processed_data and replace 0 with NaN for training and testing
