@@ -102,12 +102,11 @@ def save_model(model):
 
     # Save the model
     os.makedirs(os.path.dirname(MODEL_DIR), exist_ok=True)
-    datetimestamp = datetime.now().strftime("%y%m%d%H-%M")
-    filename = f"stock_price_predictor_{datetimestamp}.keras"
 
     try:
-        model.save(os.path.join(MODEL_DIR, filename))
-        print(f"Model saved as {filename}.")
+        model.save(os.path.join(
+            MODEL_DIR, "stock_price_prediction_model.keras"))
+        print(f"Model saved.")
     except Exception as e:
         print(f"Failed to save model: {e}")
 
